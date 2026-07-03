@@ -1,0 +1,11 @@
+{
+  "name": "leadminer/app",
+  "description": "LeadMiner - Lead generation tool",
+  "type": "project",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  }
+}
