@@ -32,7 +32,13 @@ class Database
                 PDO::FETCH_ASSOC
             );
 
-            self::$connection->exec("PRAGMA foreign_keys = ON;");
+            self::$connection->exec(
+                "PRAGMA busy_timeout = 5000;"
+            );
+
+            self::$connection->exec(
+                "PRAGMA foreign_keys = ON;"
+            );
         }
 
         return self::$connection;
