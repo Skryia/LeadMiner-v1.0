@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Enums\JobStatus;
+
 class JobRepository extends BaseRepository
 {
     public function create(array $data): int
@@ -48,7 +50,7 @@ class JobRepository extends BaseRepository
             'include_website'   => $data['include_website'] ?? 1,
             'include_email'     => $data['include_email'] ?? 1,
             'include_phone'     => $data['include_phone'] ?? 1,
-            'status'            => $data['status'] ?? 'pending',
+            'status'            => $data['status'] ?? JobStatus::PENDING->value,
             'created_at'        => date('Y-m-d H:i:s')
         ]);
 
@@ -95,6 +97,63 @@ class JobRepository extends BaseRepository
 
         return $statement->execute([
             $status,
+            $id
+        ]);
+    }
+
+    public function markRunning(int $id): bool
+    {
+        $statement = $this->pdo->prepare(
+            "
+            UPDATE jobs
+            SET
+                status = ?,
+                started_at = ?
+            WHERE id = ?
+            "
+        );
+
+        return $statement->execute([
+            JobStatus::RUNNING->value,
+            date('Y-m-d H:i:s'),
+            $id
+        ]);
+    }
+
+    public function markCompleted(int $id): bool
+    {
+        $statement = $this->pdo->prepare(
+            "
+            UPDATE jobs
+            SET
+                status = ?,
+                completed_at = ?
+            WHERE id = ?
+            "
+        );
+
+        return $statement->execute([
+            JobStatus::COMPLETED->value,
+            date('Y-m-d H:i:s'),
+            $id
+        ]);
+    }
+
+    public function markFailed(int $id): bool
+    {
+        $statement = $this->pdo->prepare(
+            "
+            UPDATE jobs
+            SET
+                status = ?,
+                completed_at = ?
+            WHERE id = ?
+            "
+        );
+
+        return $statement->execute([
+            JobStatus::FAILED->value,
+            date('Y-m-d H:i:s'),
             $id
         ]);
     }
